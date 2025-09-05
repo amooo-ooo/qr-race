@@ -8,16 +8,11 @@ app.use(renderer)
 
 const sessions: Record<string, any> = {}
 const leaderboard: any[] = []
-const adminSessions: Record<string, { eventName: string, loginTime: number }> = {}
 
-// Simple admin credentials - in production, use environment variables and hashed passwords
-const adminCredentials = {
-  username: 'admin',
-  password: 'admin123'
-}
-
-const eventData: Record<string, { orderedCodes: string[], clues: Record<string, string> }> = {
-  'default': {
+const eventData: Record<string, { title: string, description: string, orderedCodes: string[], clues: Record<string, string> }> = {
+  'global-leaders': {
+    title: 'Riccarton Market Amazing Race',
+    description: 'Team up with your friends or go solo for an Amazing Race tour around Riccarton Market, hosted by the UC Global Leaders. Scan each QR code to get a hint leading to the next one. Complete the course as fast as you can and the quickest time wins a reward.',
     orderedCodes: ['HEARTYHANGI', 'MUSSELMAD', 'ADAMSMALAY', 'PRICKLYPEAR'],
     clues: {
       HEARTYHANGI: 'Hearty Hangi: Tradition below ground and warm above',
@@ -28,15 +23,21 @@ const eventData: Record<string, { orderedCodes: string[], clues: Record<string, 
   }
 }
 
-const LeaderboardComponent = ({ showTitle = true }: { showTitle?: boolean }) => {
+const LeaderboardComponent = ({
+  showTitle = true,
+  highlightEmail = ''
+}: { showTitle?: boolean; highlightEmail?: string }) => {
   const sorted = [...leaderboard].sort((a, b) => a.timeTaken - b.timeTaken)
-  
+
   return (
     <div>
       {showTitle && <h2>Leaderboard</h2>}
       <ol>
         {sorted.map((u) => (
-          <li key={u.email}>
+          <li
+            key={u.email}
+            className={highlightEmail && u.email === highlightEmail ? 'leaderboard-highlight' : undefined}
+          >
             <span>{u.name}</span>: {(u.timeTaken / 1000).toFixed(1)} sec
           </li>
         ))}
@@ -96,39 +97,67 @@ app.get('/:event/qr/:code', (c) => {
 
   const currentCodeIndex = eventInfo.orderedCodes.indexOf(code)
   const expectedIndex = sessions[sessionId].currentClue
-  
-  if (currentCodeIndex !== expectedIndex) {
-    if (currentCodeIndex < expectedIndex) {
-      return c.render(<p>You've already completed this clue! Please continue to the next one.</p>)
-    } else {
-      return c.render(<p>You must complete the clues in order! Please go back and complete the previous clue first.</p>)
-    }
-  }
+  const totalClues = eventInfo.orderedCodes.length
+  const clueNumber = currentCodeIndex + 1
 
-  if (code === eventInfo.orderedCodes[eventInfo.orderedCodes.length - 1]) {
+  if (currentCodeIndex === eventInfo.orderedCodes.length - 1 && currentCodeIndex === expectedIndex) {
     const timeTaken = Date.now() - sessions[sessionId].startTime
-    leaderboard.push({ ...sessions[sessionId], timeTaken })
+    const user = { ...sessions[sessionId], timeTaken }
+
+    const existingIdx = leaderboard.findIndex(u => u.email === user.email)
+    if (existingIdx !== -1) {
+      if (timeTaken < leaderboard[existingIdx].timeTaken) {
+        leaderboard[existingIdx] = user
+      }
+    } else {
+      leaderboard.push(user)
+    }
+
     delete sessions[sessionId]
-    
     deleteCookie(c, 'sessionId', { path: '/' });
 
     return c.render(
       <div>
+        <div className="clue-tag">
+          Clue {clueNumber}/{totalClues}
+        </div>  
         <h1>{clue}</h1>
-        <p>Your time: <span>{(timeTaken / 1000).toFixed(1)}</span> seconds</p>
-        
-        <LeaderboardComponent showTitle={true} />
-        
-        <a href={`/${c.req.param('event')}`}>Start New Race</a>
+        <p> Congratulations! You finished the treasure hunt! Your time: <span>{(timeTaken / 1000).toFixed(1)}</span> seconds.</p>
+        <LeaderboardComponent showTitle={true} highlightEmail={user.email} />
+        {/* <a href={`/${c.req.param('event')}`}>Start New Race</a> */}
       </div>
     )
   }
 
-  const currentIndex = eventInfo.orderedCodes.indexOf(code)
-  if (currentIndex >= 0) {
-    sessions[sessionId].currentClue = currentIndex + 1
+  if (currentCodeIndex < expectedIndex) {
+    return c.render(
+      <div>
+        <div className="clue-tag">
+          Clue {clueNumber}/{totalClues}
+        </div>
+        <h1>{clue}</h1>
+        <div class="clue-completed-message">
+          You've already completed this clue! Please continue to the next one.
+        </div>
+      </div>
+    )
   }
-  return c.render(<h1>{clue}</h1>)
+
+  if (currentCodeIndex > expectedIndex) {
+    return c.render(<p>You must complete the clues in order! Please go back and complete the previous clue first.</p>)
+  }
+
+  if (currentCodeIndex >= 0) {
+    sessions[sessionId].currentClue = currentCodeIndex + 1
+  }
+  return c.render(
+    <div>
+      <div className="clue-tag">
+        Clue {clueNumber}/{totalClues}
+      </div>
+      <h1>{clue}</h1>
+    </div>
+  )
 })
 
 app.get('/:event', (c) => {
@@ -139,17 +168,26 @@ app.get('/:event', (c) => {
     return c.render(<p>Event '{eventName}' not found.</p>)
   }
 
+  const teamNames = leaderboard.map(u => u.name)
   return c.render(
     <div>
-      <h1>Welcome to QR-Race!</h1>
-      <form action={`/${eventName}/start`} method="post">
+      <h1>Welcome to the {eventInfo.title}!</h1>
+      <p>{eventInfo.description}</p>
+      <form action={`/${eventName}/start`} method="post" id="race-form">
         <div>
-            <input name="name" required placeholder="Team Name" />
+            <input
+              name="name"
+              required
+              placeholder="Team Name"
+              id="team-name-input"
+              autoComplete="off"
+              data-team-names={encodeURIComponent(JSON.stringify(teamNames.map(n => n.toLowerCase())))}
+            />
         </div>
         <div>
             <input name="email" type="email" required placeholder="Email" />
         </div>
-        <button type="submit">Start Race</button>
+        <button type="submit" id="race-submit-btn">Start Race</button>
       </form>
       
       <LeaderboardComponent showTitle={true} />
