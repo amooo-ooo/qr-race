@@ -13,14 +13,14 @@ const globalCSS = css`
     --destructive: #ef4444;
   }
 
-  @media (prefers-color-scheme: dark) {
+  /* @media (prefers-color-scheme: dark) {
     :root {
       --background: #0f172a;
       --foreground: #f8fafc;
       --border: #334155;
       --muted-foreground: #94a3b8;
     }
-  }
+  } */
 
   * {
     box-sizing: border-box;
