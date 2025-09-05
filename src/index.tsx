@@ -1,8 +1,12 @@
 import { Hono } from 'hono'
+import { serveStatic } from 'hono/cloudflare-workers'
 import { getCookie, setCookie, deleteCookie } from 'hono/cookie'
 import { renderer } from './renderer'
 
+// Serve static assets from the root (for /style.css, etc.)
+// Add an empty manifest to satisfy the type requirement
 const app = new Hono()
+app.use('/*', serveStatic({ root: './', manifest: {} }))
 
 app.use(renderer)
 
