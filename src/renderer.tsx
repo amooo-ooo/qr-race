@@ -1,5 +1,6 @@
 import { jsxRenderer } from 'hono/jsx-renderer'
-import { Link, ViteClient } from 'vite-ssr-components/hono'
+import { ViteClient } from 'vite-ssr-components/hono'
+import { GlobalStyles } from './styles'
 
 export const renderer = jsxRenderer(({ children }) => {
   return (
@@ -8,7 +9,7 @@ export const renderer = jsxRenderer(({ children }) => {
         <meta charset="UTF-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <ViteClient />
-        <link href="/style.css" rel="stylesheet" />
+        <GlobalStyles />
       </head>
       <body>{children}</body>
     </html>
