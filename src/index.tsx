@@ -91,7 +91,7 @@ app.post('/:event/start', async (c) => {
   setCookie(c, 'sessionId', sessionId, {
     path: '/',
     httpOnly: true,
-    sameSite: 'Strict',
+    sameSite: 'Lax',
     maxAge: 60 * 60 * 24
   })
 
