@@ -172,6 +172,16 @@ p:contains("Session not found") {
   font-weight: 600;
 }
 
+.leaderboard-inprogress {
+  opacity: 0.6;
+  font-style: italic;
+  background: none;
+  border: 1px dashed var(--border);
+}
+.leaderboard-inprogress::before {
+  font-style: normal;
+}
+
 @media (max-width: 375px) {
   body {
     padding: 0.5rem;

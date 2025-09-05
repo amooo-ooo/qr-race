@@ -9,10 +9,19 @@ app.use(renderer)
 const sessions: Record<string, any> = {}
 const leaderboard: any[] = []
 
-const eventData: Record<string, { title: string, description: string, orderedCodes: string[], clues: Record<string, string> }> = {
+interface EventInfo {
+  title: string
+  description: string
+  host: string
+  orderedCodes: string[]
+  clues: Record<string, string>
+}
+
+const eventData: Record<string, EventInfo> = {
   'global-leaders': {
     title: 'Riccarton Market Amazing Race',
     description: 'Team up with your friends or go solo for an Amazing Race tour around Riccarton Market, hosted by the UC Global Leaders. Scan each QR code to get a hint leading to the next one. Complete the course as fast as you can and the quickest time wins a reward.',
+    host: 'UC Global Leaders',
     orderedCodes: ['HEARTYHANGI', 'MUSSELMAD', 'ADAMSMALAY', 'PRICKLYPEAR'],
     clues: {
       HEARTYHANGI: 'Hearty Hangi: Tradition below ground and warm above',
@@ -29,6 +38,10 @@ const LeaderboardComponent = ({
 }: { showTitle?: boolean; highlightEmail?: string }) => {
   const sorted = [...leaderboard].sort((a, b) => a.timeTaken - b.timeTaken)
 
+  const inProgressTeams = Object.values(sessions)
+    .filter(s => s.name && s.email)
+    .map(s => ({ name: s.name, email: s.email }))
+
   return (
     <div>
       {showTitle && <h2>Leaderboard</h2>}
@@ -41,7 +54,15 @@ const LeaderboardComponent = ({
             <span>{u.name}</span>: {(u.timeTaken / 1000).toFixed(1)} sec
           </li>
         ))}
-        {sorted.length === 0 && <p>No one has finished the race yet!</p>}
+        {inProgressTeams.map((u) => (
+          <li
+            key={u.email}
+            className="leaderboard-inprogress"
+          >
+            <span>{u.name}</span>: In Progress
+          </li>
+        ))}
+        {sorted.length === 0 && inProgressTeams.length === 0 && <p>No one has finished the race yet!</p>}
       </ol>
     </div>
   )
@@ -49,8 +70,8 @@ const LeaderboardComponent = ({
 
 app.post('/:event/start', async (c) => {
   const form = await c.req.formData()
-  const name = form.get('name') as string
-  const email = form.get('email') as string
+  const name = form.get('name').trim()
+  const email = form.get('email').trim()
   const eventName = c.req.param('event')
 
   const eventInfo = eventData[eventName]
@@ -81,7 +102,7 @@ app.get('/:event/qr/:code', (c) => {
   const sessionId = getCookie(c, 'sessionId')
 
   if (!sessionId || !sessions[sessionId]) {
-    return c.render(<p>Session not found. Please start again.</p>)
+    return c.redirect(`/${c.req.param('event')}`)
   }
 
   const eventName = c.req.param('event')
@@ -171,6 +192,9 @@ app.get('/:event', (c) => {
   const teamNames = leaderboard.map(u => u.name)
   return c.render(
     <div>
+      <head>
+        <title>{eventInfo.title} - {eventInfo.host}</title>
+      </head>
       <h1>Welcome to the {eventInfo.title}!</h1>
       <p>{eventInfo.description}</p>
       <form action={`/${eventName}/start`} method="post" id="race-form">
@@ -189,11 +213,9 @@ app.get('/:event', (c) => {
         </div>
         <button type="submit" id="race-submit-btn">Start Race</button>
       </form>
-      
       <LeaderboardComponent showTitle={true} />
     </div>
   )
 })
-
 
 export default app
