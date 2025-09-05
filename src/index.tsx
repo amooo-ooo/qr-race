@@ -194,6 +194,7 @@ app.get('/:event', (c) => {
     <div>
       <head>
         <title>{eventInfo.title} - {eventInfo.host}</title>
+        <link href="/style.css" rel="stylesheet" />
       </head>
       <h1>Welcome to the {eventInfo.title}!</h1>
       <p>{eventInfo.description}</p>
