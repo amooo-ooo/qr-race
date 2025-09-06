@@ -27,6 +27,9 @@ const globalCSS = css`
     margin: 0;
     padding: 0;
     font-family: 'Inter', system-ui, sans-serif;
+    /* Force color printing for all elements */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   body {
@@ -157,6 +160,9 @@ const globalCSS = css`
     font-size: 0.9rem;
     font-weight: 500;
     margin-bottom: 0.75rem;
+    /* Force color printing */
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
   }
 
   .clue-completed-message {
@@ -210,9 +216,27 @@ const globalCSS = css`
       max-width: none;
       margin: 0;
       padding: 0;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
     h1 {
       font-size: 3rem;
+      color: #000 !important;
+    }
+    p {
+      color: #000 !important;
+    }
+    .clue-tag {
+      background: #3b82f6 !important;
+      color: #ffffff !important;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      border: 2px solid #3b82f6 !important;
+      box-shadow: inset 0 0 0 20px #3b82f6 !important;
+    }
+    * {
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
     }
   }
 
