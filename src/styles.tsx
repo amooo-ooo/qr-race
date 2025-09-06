@@ -279,6 +279,131 @@ const globalCSS = css`
   .print-title {
     font-size: 5rem;
   }
+
+  /* Admin Dashboard Styles */
+  .admin-container {
+    width: 95vw;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 2rem;
+    /* Center the container properly */
+    position: relative;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 2rem 0;
+    font-family: 'Inter', system-ui, sans-serif;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    overflow: hidden;
+  }
+
+  .admin-table th,
+  .admin-table td {
+    border: 1px solid var(--border);
+    padding: 0.75rem 1rem;
+    text-align: left;
+  }
+
+  .admin-table th {
+    background-color: var(--primary);
+    color: var(--primary-foreground);
+    font-weight: 600;
+    font-size: 0.875rem;
+  }
+
+  .admin-table tr:nth-child(even) {
+    background-color: color-mix(in srgb, var(--muted-foreground) 5%, transparent);
+  }
+
+  .admin-table tr:hover {
+    background-color: color-mix(in srgb, var(--primary) 8%, transparent);
+  }
+
+  .admin-header {
+    text-align: center;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    border: 1px solid var(--border);
+    border-radius: 0.5rem;
+    background-color: color-mix(in srgb, var(--primary) 3%, transparent);
+  }
+
+  .admin-header h1 {
+    margin-bottom: 0.5rem;
+    font-size: 2rem;
+  }
+
+  .admin-header p {
+    margin: 0.25rem 0;
+    color: var(--muted-foreground);
+  }
+
+  .status-completed {
+    color: #16a34a;
+    font-weight: 600;
+  }
+
+  .status-progress {
+    color: #ea580c;
+    font-style: italic;
+    font-weight: 500;
+  }
+
+  .email-link {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .email-link:hover {
+    text-decoration: underline;
+    opacity: 0.8;
+  }
+
+  .admin-info-panel {
+    margin-top: 3rem;
+    padding: 1.5rem;
+    background: color-mix(in srgb, var(--primary) 5%, transparent);
+    border-radius: 0.5rem;
+  }
+
+  .admin-info-panel h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: var(--foreground);
+  }
+
+  .admin-info-panel p {
+    margin-bottom: 1rem;
+  }
+
+  .admin-info-panel ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .admin-info-panel li {
+    margin: 0.5rem 0;
+    padding: 0.5rem;
+    background: var(--background);
+    border-radius: 0.25rem;
+    border: 1px solid var(--border);
+  }
+
+  .admin-info-panel a {
+    color: var(--primary);
+    text-decoration: none;
+    font-weight: 500;
+  }
+
+  .admin-info-panel a:hover {
+    text-decoration: underline;
+  }
 `
 
 

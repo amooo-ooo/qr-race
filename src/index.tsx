@@ -4,14 +4,11 @@ import { renderer } from './renderer'
 import { 
   DBBindings, 
   Race, 
-  Session,
   insertRace,
   updateRaceProgress,
   finishRace,
-  getCompletedRaces,
   getInProgressRaces,
   getRaceByEmailAndEvent,
-  getBestTimeForUser,
   getLeaderboardByTeamName,
   createSessionKV,
   getSessionKV,
@@ -341,6 +338,115 @@ app.get('/admin/print-qr/:event', async (c) => {
           </p>
         </div>
       ))}
+    </div>
+  )
+})
+
+// Admin endpoint for viewing leaderboard with email addresses
+app.get('/admin/leaderboard/:event', async (c) => {
+  const eventName = c.req.param('event')
+  const eventInfo = eventData[eventName]
+  
+  if (!eventInfo) {
+    return c.render(<p>Event not found.</p>)
+  }
+
+  const completedRaces = await getLeaderboardByTeamName(c, eventName)
+  const inProgressRaces = await getInProgressRaces(c, eventName)
+  
+  return c.render(
+    <div className="admin-container">
+      <div className="admin-header">
+        <h1>{eventInfo.title} - Admin Dashboard</h1>
+        <p><strong>Host:</strong> {eventInfo.host}</p>
+        <p><strong>Total Completed:</strong> {completedRaces.length} | <strong>In Progress:</strong> {inProgressRaces.length}</p>
+      </div>
+
+      <h2>🏆 Completed Participants (Best Times)</h2>
+      {completedRaces.length > 0 ? (
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Rank</th>
+              <th>Team Name</th>
+              <th>Email</th>
+              <th>Completion Time</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {completedRaces.map((race, index) => (
+              <tr key={`${race.email}-completed`}>
+                <td><strong>{index + 1}</strong></td>
+                <td>{race.name}</td>
+                <td>
+                  <a href={`mailto:${race.email}`} className="email-link">
+                    {race.email}
+                  </a>
+                </td>
+                <td>{formatTime(race.time_taken || 0)}</td>
+                <td><span className="status-completed">✅ Completed</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No participants have completed the race yet.</p>
+      )}
+
+      <h2>🏃 Participants In Progress</h2>
+      
+      {/* Clue Reference List */}
+      <div className="admin-info-panel" style="margin-bottom: 2rem;">
+        <h3>📋 Clue Reference</h3>
+        <ul className="clue-reference-list" >
+          {eventInfo.orderedCodes.map((code, index) => (
+            <li key={code} style="margin: 0.5rem 0;">
+              <strong>Clue {index + 1}:</strong> {eventInfo.clues[code]}
+            </li>
+          ))}
+        </ul>
+      </div>
+
+      {inProgressRaces.length > 0 ? (
+        <table className="admin-table">
+          <thead>
+            <tr>
+              <th>Team Name</th>
+              <th>Email</th>
+              <th>Current Clue</th>
+              <th>Clue Text</th>
+              <th>Time Elapsed</th>
+              <th>Status</th>
+            </tr>
+          </thead>
+          <tbody>
+            {inProgressRaces.map((race) => (
+              <tr key={`${race.email}-progress`}>
+                <td>{race.name}</td>
+                <td>
+                  <a href={`mailto:${race.email}`} className="email-link">
+                    {race.email}
+                  </a>
+                </td>
+                <td>Clue {race.current_clue}/{eventInfo.orderedCodes.length}</td>
+                <td style="font-style: italic; color: #666;">
+                  {eventInfo.clues[eventInfo.orderedCodes[race.current_clue-1]] || 'N/A'}
+                </td>
+                <td>{formatTime(Date.now() - race.start_time)}</td>
+                <td><span className="status-progress">🔄 In Progress</span></td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      ) : (
+        <p>No participants are currently in progress.</p>
+      )}
+      
+      <div className="admin-info-panel">
+        <h3>📧 Contact Instructions</h3>
+        <p><strong>To contact participants:</strong> Click on any email address to open your default email client, or copy the email addresses from this page.</p>  
+      </div>
     </div>
   )
 })

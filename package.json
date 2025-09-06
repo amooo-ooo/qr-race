@@ -2,7 +2,7 @@
   "name": "qr-race",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "wrangler dev",
     "build": "vite build",
     "preview": "$npm_execpath run build && vite preview",
     "deploy": "$npm_execpath run build && wrangler deploy",
