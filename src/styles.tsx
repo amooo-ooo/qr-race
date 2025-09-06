@@ -200,6 +200,62 @@ const globalCSS = css`
       height: 2.75rem;
     }
   }
+
+  /* QR Code Printing Styles */
+  @media print {
+    .page-break { 
+      page-break-before: always; 
+    }
+    body {
+      max-width: none;
+      margin: 0;
+      padding: 0;
+    }
+    h1 {
+      font-size: 3rem;
+    }
+  }
+
+  .qr-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 40px;
+    text-align: center;
+  }
+
+  .qr-code {
+    margin: 20px 0;
+    /* margin-bottom: 40px; */
+  }
+
+  .print-text {
+    margin-top: 50px;
+  }
+
+  .landing-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px;
+  }
+
+  .landing-qr {
+    margin-bottom: 30px;
+  }
+
+  .landing-content {
+    text-align: center;
+    max-width: 600px;
+  }
+
+  .print-title {
+    font-size: 5rem;
+  }
 `
+
 
 export const GlobalStyles = () => <Style>{globalCSS}</Style>

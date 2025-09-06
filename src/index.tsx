@@ -289,4 +289,58 @@ app.get('/:event', async (c) => {
   )
 })
 
+app.get('/admin/print-qr/:event', async (c) => {
+  const eventName = c.req.param('event')
+  const eventInfo = eventData[eventName]
+  
+  if (!eventInfo) {
+    return c.render(<p>Event not found.</p>)
+  }
+
+  const baseUrl = c.req.url.split('/admin')[0]
+  
+  return c.render(
+    <div>
+      {/* Landing page with QR code on top */}
+      <div className="landing-page">
+        <div className="landing-qr">
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(baseUrl + '/' + eventName)}`}
+            alt="Event Start QR Code"
+            className="qr-code"
+          />
+        </div>
+        <div className="landing-content">
+          <h1 className="print-title">{eventInfo.title}</h1>
+          <p>{eventInfo.description}</p>
+          <p><strong>Hosted by:</strong> {eventInfo.host}</p>
+          <p>
+            <strong>Instructions:</strong> Scan the QR code above to start the treasure hunt! 
+            Each QR code will give you a clue to find the next location. 
+            Complete all clues as quickly as possible to win!
+          </p>
+        </div>
+      </div>
+
+      {eventInfo.orderedCodes.slice(1).map((code, index) => (
+        <div key={code} className="qr-page page-break">
+          <h1 className="print-title">{eventInfo.title}</h1>
+          <div className="clue-tag">Clue {index + 2}/{eventInfo.orderedCodes.length}</div>
+          <img 
+            src={`https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(baseUrl + '/' + eventName + '/qr/' + code)}`}
+            alt={`QR Code for clue ${index + 2}`}
+            className="qr-code"
+          />
+          <p class="print-text">
+            {index === eventInfo.orderedCodes.length - 2
+              ? "Final clue! Scan to complete the treasure hunt!"
+              : "Scan this QR code when you find this location to get your next clue!"
+            }
+          </p>
+        </div>
+      ))}
+    </div>
+  )
+})
+
 export default app
