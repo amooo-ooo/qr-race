@@ -37,7 +37,7 @@ const eventData: Record<string, EventInfo> = {
     title: 'Riccarton Market Amazing Race',
     description: 'Team up with your friends or go solo for an Amazing Race tour around Riccarton Market, hosted by the UC Global Leaders. Scan each QR code to get a hint leading to the next one. Complete the course as fast as you can and the quickest time wins a reward.',
     host: 'UC Global Leaders',
-    orderedCodes: ['9Y1X3W5V', '4U7T9S6R', '8Q5P7O3N', '6M2L4K1J', '2P8L3N9K', '7B4F6A1D', '5H9G2J3C', '1E6K8M7Q0', '3A2B1C4D'],
+    orderedCodes: ['9Y1X3W5V', '4U7T9S6R', '8Q5P7O3N', '6M2L4K1J', '2P8L3N9K', '7B4F6A1D', '5H9G2J3C', '1E6K8M7Q', '3A2B1C4D'],
     clues: {
       '9Y1X3W5V': "Fried croquettes, pastels, and a taste of Brazil.", // Brazil in a Box
       '4U7T9S6R': "Pies, pasties, and toasties made with heart.", // Heart & Soul Kitchen
@@ -229,11 +229,13 @@ app.get('/:event/qr/:code', async (c) => {
     return c.render(<p>You must complete the clues in order! Please go back and complete the previous clue first.</p>)
   }
 
-  if (currentCodeIndex >= 0) {
+  // Only increment the clue index if they're at the correct current clue
+  if (currentCodeIndex === expectedIndex) {
     const newClueIndex = currentCodeIndex + 1
     await updateSessionKV(c, sessionId, { current_clue: newClueIndex })
     await updateRaceProgress(c, session.email, eventName, newClueIndex)
   }
+  
   return c.render(
     <div>
       <div className="clue-tag">
