@@ -22,12 +22,16 @@ const eventData: Record<string, EventInfo> = {
     title: 'Riccarton Market Amazing Race',
     description: 'Team up with your friends or go solo for an Amazing Race tour around Riccarton Market, hosted by the UC Global Leaders. Scan each QR code to get a hint leading to the next one. Complete the course as fast as you can and the quickest time wins a reward.',
     host: 'UC Global Leaders',
-    orderedCodes: ['HEARTYHANGI', 'MUSSELMAD', 'ADAMSMALAY', 'PRICKLYPEAR'],
+    orderedCodes: ['9Y1X3W5V', '4U7T9S6R', '8Q5P7O3N', '6M2L4K1J', '2P8L3N9K', '7B4F6A1D', '5H9G2J3C', '1E6K8M7Q'],
     clues: {
-      HEARTYHANGI: 'Hearty Hangi: Tradition below ground and warm above',
-      MUSSELMAD: 'Mussel Madness: Flex your crazy sea creature',
-      ADAMSMALAY: 'Adam\'s Malaysian Noodles: First man\'s feast with a Southeast twist',
-      PRICKLYPEAR: 'Prickly Pear: Spikes guard the sweetest secret',
+      '9Y1X3W5V': "Fried croquettes, pastels, and a taste of Brazil", // Brazil in a Box
+      '4U7T9S6R': "Pies, pasties, and toasties made with heart", // Heart & Soul Kitchen
+      '8Q5P7O3N': "Fast bites, Korean fried crunch done right", // JAEJU
+      '6M2L4K1J': "Sweet forest magic stacked on waffles", // Black Forest Waffle Hut
+      '2P8L3N9K': 'Tradition below ground and warm above', // Hearty Hangi
+      '7B4F6A1D': 'Flex your crazy sea creature', // Mussel Madness
+      '5H9G2J3C': "First man's feast with a Southeast twist", // Adams Malay
+      '1E6K8M7Q': 'Spikes guard the sweetest secret', // Prickly Pear
     }
   }
 }
