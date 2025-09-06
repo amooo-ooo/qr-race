@@ -2,5 +2,18 @@
   "$schema": "node_modules/wrangler/config-schema.json",
   "name": "qr-race",
   "compatibility_date": "2025-08-03",
-  "main": "./src/index.tsx"
+  "main": "./src/index.tsx",
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "qr-race-db",
+      "database_id": "e1f41c79-4072-4573-a59d-0dd786caf56c"
+    }
+  ],
+  "kv_namespaces": [
+    {
+      "binding": "SESSIONS",
+      "id": "832547db1fdf4fa58c0bb328ba5c3ebf"
+    }
+  ]
 }
